@@ -1,0 +1,13 @@
+{
+    "new_version": "1.0.0",
+    "info_page": "https://github.com/viktoriadeann/vdadcwoo",
+    "download_link": "https://github.com/viktoriadeann/vdadcwoo/raw/master/releases/vdadcwoo-1.0.0.zip",
+    "slug": "vdadcwoo",
+    "requires": "3.0",
+    "tested": "3.9.1",
+    "last_updated": "2020-08-21",
+    "sections": [
+		{"Description": "This is the DigitalChalk WooCommerce integration plugin for VDA"},
+		{"Changelog": "merged in pull request"}
+    ]
+}
