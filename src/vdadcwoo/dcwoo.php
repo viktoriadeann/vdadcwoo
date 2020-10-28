@@ -39,7 +39,7 @@ function dcwoo_settings_link($links) {
 
 function dcwoo_activate_updater() {
 	require_once(DCWOO_ABSPATH .'/includes/class-dcwoo-updater.php');
-	new dcwoo_updater(DCWOO_VERSION_NUM, 'https://raw.github.com/digitalchalk/dcwoo/master/update', plugin_basename(__FILE__));
+	new dcwoo_updater(DCWOO_VERSION_NUM, 'https://raw.github.com/viktoriadeann/vdadcwoo/master/update', plugin_basename(__FILE__));
 }
 
 $plugin = plugin_basename(__FILE__);
