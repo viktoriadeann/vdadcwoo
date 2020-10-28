@@ -3,9 +3,9 @@
 Plugin Name: DigitalChalk / WooCommerce Integration
 Plugin URI: https://github.com/viktoriadeann/vdadcwoo
 Description: Fork of Custom DigitalChalk plugin that integrates offerings with WooCommerce
-Version: 1.0.0
-Author: Chris Hampton (brobinson@digitalchalk.com)
-Author URI: http://www.viktoriadeann.com.com
+Version: 1.0.1
+Author: Chris Hampton (chris@viktoriadeann.com)
+Author URI: http://www.viktoriadeann.com
 License: The MIT License (MIT).  Copyright (c) 2014 DigitalChalk.com
 Text Domain: dcwoo
 
