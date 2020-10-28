@@ -31,16 +31,12 @@ if (!class_exists("DCWOO")) {
                 add_filter('woocommerce_add_to_cart_validation', array($this, 'add_to_cart_validation_filter'), 10, 3);
 
             }
-            add_action( 'woocommerce_order_status_completed', array($this, 'mysite_completed'),10,2);
-            
+            add_action( 'woocommerce_order_status_processing', array($this, 'mysite_processing'),10,2);
             // order status change actions (these must be set in both admin and frontend)
-            // add_filter('woocommerce_payment_complete_order_status', array($this, 'payment_complete_order_status_filter'), 10, 2);
-            
-            // Basically setting meta data to state that this order has been processed.
+            add_filter('woocommerce_payment_complete_order_status', array($this, 'payment_complete_order_status_filter'), 11, 2);
+            // Note the filter below is at priority 11... in order to check the one above first (at 10)
             add_filter('woocommerce_payment_complete_order_status', array($this, 'payment_complete_order_status_filter_step2'), 10, 2);
-            
-            // If all products are virutal, mark complete
-            add_filter('woocommerce_payment_complete_order_status', array($this, 'mark_complete_if_all_virtual'), 11, 2);
+
         }
 
         //----------------------------------------------------------------------------
@@ -121,11 +117,103 @@ if (!class_exists("DCWOO")) {
 
         public function process_order($order_id, $isRetry = false)
         {
-            return true;
+            global $woocommerce;
+            $processResult = true;
+            // $resolveUrl = admin_url('options.php?page=resolve_issue&order_id=' . $order_id); // added to order notes
+            // $order = new WC_Order($order_id);
+            // if (!$order) {
+            //     return false;
+            // }
+
+            // // Check if any DC items are present....
+            // $dcProducts = array();
+            // $items = $order->get_items();
+            // foreach ($items as $item) {
+            //     $dcMeta = get_post_meta($item['product_id'], DCWOO_OFFERING_ID_META, true);
+            //     if (!empty($dcMeta)) {
+            //         $dcProducts[$dcMeta] = $item;
+            //     }
+            // }
+
+            // if (count($dcProducts) > 0) {
+            //     if (is_user_logged_in()) {
+
+            //         $wpUser = wp_get_current_user();
+            //         $dcUser = $this->getDCUserByEmail($wpUser->user_email);
+            //         if (empty($dcUser)) {
+            //             // Create user
+            //             $result = $this->makeApiV5Call("/dc/api/v5/users", "POST", array('firstName' => $wpUser->first_name, 'lastName' => $wpUser->last_name, 'email' => $order->get_billing_email(), 'password' => '***1UNPARSEABLE2***'));
+
+            //             if ($result['api_result'] == 'success') {
+
+            //                 $order->add_order_note("Created new DC user with email '" . $wpUser->user_email . "'.");
+            //                 $dcUser = $this->getDCUserByEmail($wpUser->user_email);
+            //                 $update_user = $this->dc_user_update_info($order_id,$dcUser->id);
+            //             } else {
+            //                 $order->add_order_note("Tried to add user with email '" . $wpUser->user_email . "' to DigitalChalk and failed.  Therefore, no registrations were done from this order. <a href='" . $resolveUrl . "'>Resolve</a>");
+            //                 $processResult = false;
+            //                 //$order_status = 'processing';
+            //             }
+            //         }
+            //         if (!empty($dcUser)) {
+
+            //             foreach ($dcProducts as $dcOfferingId => $wooItem) {
+
+            //                 $result = $this->makeApiV5Call("/dc/api/v5/registrations", "POST", array('userId' => $dcUser->id, 'offeringId' => $dcOfferingId));
+            //                 if ($result['api_result'] == 'success') {
+            //                     $order->add_order_note('Success registering DigitalChalk user ' . $wpUser->user_email . ' to product ' . $wooItem['name']);
+            //                     $update_user = $this->dc_user_update_info($order_id,$dcUser->id);
+            //                 } else {
+            //                     $order->add_order_note('Failed to register DigitalChalk user ' . $wpUser->user_email . ' to product ' . $wooItem['name'] . '. <a href="' . $resolveUrl . '">Resolve</a>');
+            //                     $processResult = false;
+            //                     //$order_status = 'processing';
+            //                 }
+
+            //             }
+            //         }
+            //     } else {
+
+            //         $dcUser = $this->getDCUserByEmail($order->get_billing_email());
+            //         if (empty($dcUser)) {
+            //             // Create user
+            //             $result = $this->makeApiV5Call("/dc/api/v5/users", "POST", array('firstName' => $order->get_billing_first_name(), 'lastName' =>$order->get_billing_last_name(), 'email' => $order->get_billing_email(), 'password' => '***1UNPARSEABLE2***'));
+
+            //             if ($result['api_result'] == 'success') {
+            //                 $order->add_order_note("Created new DC user with email '" . $order->get_billing_email() . "'.");
+            //                 $dcUser = $this->getDCUserByEmail($order->get_billing_email());
+            //                 $update_user = $this->dc_user_update_info($order_id,$dcUser->id);
+            //             } else {
+            //                 $order->add_order_note("Tried to add user with email '" . $order->get_billing_email() . "' to DigitalChalk and failed.  Therefore, no registrations were done from this order. <a href='" . $resolveUrl . "'>Resolve</a>");
+            //                 $processResult = false;
+            //                 //$order_status = 'processing';
+            //             }
+            //         }
+            //         if (!empty($dcUser)) {
+
+            //             foreach ($dcProducts as $dcOfferingId => $wooItem) {
+
+            //                 $result = $this->makeApiV5Call("/dc/api/v5/registrations", "POST", array('userId' => $dcUser->id, 'offeringId' => $dcOfferingId));
+            //                 var_dump($result);
+            //                 if ($result['api_result'] == 'success') {
+            //                     $order->add_order_note('Success registering DigitalChalk user ' . $order->get_billing_email() . ' to product ' . $wooItem['name']);
+            //                     $update_user = $this->dc_user_update_info($order_id,$dcUser->id);
+            //                 } else {
+            //                     $order->add_order_note('Failed to register DigitalChalk user ' . $order->get_billing_email() . ' to product ' . $wooItem['name'] . '. <a href="' . $resolveUrl . '">Resolve</a>');
+            //                     $processResult = false;
+            //                     //$order_status = 'processing';
+            //                 }
+
+            //             }
+            //         }
+            //     }
+
+            // }
+
+            return $processResult;
         }
 
         // define the woocommerce_order_status_changed callback 
-        function mysite_completed( $order_id ) { 
+        function mysite_processing( $order_id ) { 
             global $woocommerce;
             $processResult = true;
             $resolveUrl = admin_url('options.php?page=resolve_issue&order_id=' . $order_id); // added to order notes
@@ -165,10 +253,11 @@ if (!class_exists("DCWOO")) {
                         } else {
                             $order->add_order_note("Tried to add user with email '" . $wpUser->user_email.json_encode($result['api_result']) . "' to DigitalChalk and failed.  Therefore, no registrations were done from this order. <a href='" . $resolveUrl . "'>Resolve</a>");
                             $processResult = false;
+                            //$order_status = 'processing';
                         }
                     }
                     if (!empty($dcUser)) {
-                        // create registrations for existing user
+
                         foreach ($dcProducts as $dcOfferingId => $wooItem) {
 
                             $result = $this->makeApiV5Call("/dc/api/v5/registrations", "POST", array('userId' => $dcUser->id, 'offeringId' => $dcOfferingId));
@@ -178,11 +267,13 @@ if (!class_exists("DCWOO")) {
                             } else {
                                 $order->add_order_note('Failed to register DigitalChalk user ' . $wpUser->user_email . ' to product ' . $wooItem['name'] . '. <a href="' . $resolveUrl . '">Resolve</a>');
                                 $processResult = false;
+                                //$order_status = 'processing';
                             }
+
                         }
                     }
                 } else {
-                    // guest checkout
+
                     $dcUser = $this->getDCUserByEmail($order->get_billing_email());
                     if (empty($dcUser)) {
                         // Create user
@@ -195,10 +286,11 @@ if (!class_exists("DCWOO")) {
                         } else {
                             $order->add_order_note("Tried to add user with email '" . $order->get_billing_email().json_encode($result['api_result']) . "' to DigitalChalk and failed.  Therefore, no registrations were done from this order. <a href='" . $resolveUrl . "'>Resolve</a>");
                             $processResult = false;
+                            //$order_status = 'processing';
                         }
                     }
                     if (!empty($dcUser)) {
-                        // create registrations for existing user
+
                         foreach ($dcProducts as $dcOfferingId => $wooItem) {
 
                             $result = $this->makeApiV5Call("/dc/api/v5/registrations", "POST", array('userId' => $dcUser->id, 'offeringId' => $dcOfferingId));
@@ -209,7 +301,9 @@ if (!class_exists("DCWOO")) {
                             } else {
                                 $order->add_order_note('Failed to register DigitalChalk user ' . $order->get_billing_email() . ' to product ' . $wooItem['name'] . '. <a href="' . $resolveUrl . '">Resolve</a>');
                                 $processResult = false;
+                                //$order_status = 'processing';
                             }
+
                         }
                     }
                 }
@@ -217,20 +311,34 @@ if (!class_exists("DCWOO")) {
             }
 
             return $processResult;
-        } 
+
+     
+} 
+         
+
+
 
         public function payment_complete_order_status_filter_step2($order_status, $order_id)
         {
+
+            if ($order_status != 'completed') {
+                return $order_status;
+            }
+
+           
+
             $processedMeta = get_post_meta($order_id, DCWOO_PROCESSED_META, true);
             if (empty($processedMeta) || $processedMeta != 'yes') {
 
                 if ($this->process_order($order_id)) {
+
                     add_post_meta($order_id, DCWOO_PROCESSED_META, 'yes') || update_post_meta($order_id, DCWOO_PROCESSED_META, 'yes');
                 } else {
                     $order_status = 'processing';
                 }
             }
             return $order_status;
+
         }
 
         public function check_cart_items_action()
@@ -252,7 +360,6 @@ if (!class_exists("DCWOO")) {
                             array_push($dcProducts, $dcmeta);
                         }
                     }
-
                     if (count($dcProducts) > 0) {
                         // There are DC products in the cart, and the user is logged into Woo.  Check them against the API
                         $email = $current_user->user_email;
@@ -289,61 +396,37 @@ if (!class_exists("DCWOO")) {
         public function payment_complete_order_status_filter($order_status, $order_id)
         {
             $order = new WC_Order($order_id);
-            if ('processing' == $order_status && ('on-hold' == $order->status || 'pending' == $order->status || 'failure' == $order->status)) {
+            if ('processing' == $order_status &&
+                ('on-hold' == $order->status || 'pending' == $order->status || 'failure' == $order->status)) {
 
-                // $new_order_status = 'completed';
+                $new_order_status = 'processing';
 
                 $userId = $order->customer_user;
                 $user = new WP_User($userId);
                 $items = $order->get_items();
+                $total_items = count($items);
+                $total_virtual_items = 0;
                 $productFactory = new WC_Product_Factory();
-                foreach ($items as $item) {
+                foreach ( $items as $item ) {
+        
+                    $product_id = $item->get_product_id();
+                    $product = wc_get_product($product_id);
+                    $type =  $product->get_type();  
+                    if($product->is_virtual())
+                    {
+                        $total_virtual_items++;
+                    }
+                }
 
-                    $product = $productFactory->get_product($item['product_id']);
-                    $meta = get_post_meta($item['product_id']);
-
-                    // Does User exist?
-
-                    // If not, create
-                    // If can't, on-hold
-                    // Register user for offering
-                    // If can't on-hold
-                    $foo = 1;
-
+                if($total_items === $total_virtual_items)
+                {
+                    $new_order_status = 'completed';
+                    $order->add_order_note("Order moved to completed because all items are virtual.");
                 }
             }
             return $new_order_status;
         }
 
-        //
-        // Mark completed if only virtual items are in order
-        //
-        public function mark_complete_if_all_virtual($order_status, $order_id)
-        {
-            $order = new WC_Order($order_id);
-
-            if ('processing' == $order_status &&
-                ('on-hold' == $order->status || 'pending' == $order->status || 'failure' == $order->status)) {
-
-                $total_items = count($order->get_items());
-                $total_virtual_items = 0;
-
-                if ($total_items > 0) {
-                    foreach ($order->get_items() as $item) {
-                        if ('line_item' == $item['type']) {
-                            $product = $order->get_product_from_item($item);
-                            if ($product->is_virtual()) {
-                                $total_virtual_items++;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if ($total_items === $total_virtual_items) {
-                return 'completed';
-            }
-        }
 
         public function write_dc_product_panel_tabs()
         {

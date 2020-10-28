@@ -1,15 +1,15 @@
 <?php
 /*
-Plugin Name: VDA DigitalChalk / WooCommerce Integration
+Plugin Name: DigitalChalk / WooCommerce Integration
 Plugin URI: https://github.com/viktoriadeann/vdadcwoo
-Description: Custom DigitalChalk plugin that integrates offerings with WooCommerce
+Description: Fork of Custom DigitalChalk plugin that integrates offerings with WooCommerce
 Version: 1.0.0
-Author: Chris Hampton (chris@viktoriadeann.com)
-Author URI: http://www.viktoriadeann.com
-License: The MIT License (MIT).  Copyright (c) 2020 Viktoriadeann.com
-Text Domain: vdadcwoo
+Author: Chris Hampton (brobinson@digitalchalk.com)
+Author URI: http://www.viktoriadeann.com.com
+License: The MIT License (MIT).  Copyright (c) 2014 DigitalChalk.com
+Text Domain: dcwoo
 
-This plugin provides integration between VDA DigitalChalk and the WooCommerce plugin.
+This plugin provides integration between DigitalChalk and the WooCommerce plugin, which was forked from https://github.com/digitalchalk/dcwoo
 */
 
 
