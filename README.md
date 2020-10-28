@@ -20,7 +20,7 @@ Login to your WordPress admin dashboard (wp-admin).  From the side menu, select 
 
 Select Plugins > Installed Plugins.  Find the "DigitalChalk / WooCommerce Integration" plugin.  Click "Activate" under the plugin.
 
-Click on "Settings" under the "VDA DigitalChalk / WooCommerce Integration" plugin.
+Click on "Settings" under the "DigitalChalk / WooCommerce Integration" plugin.
 
 For API v5 Hostname, enter your DigitalChalk virtual host name (e.g. myhost.digitalchalk.com)
 For API v5 Token, enter your token (this value will be supplied to you by DigitalChalk Support)
