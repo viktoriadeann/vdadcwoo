@@ -1,6 +1,10 @@
 DigitalChalk WooCommerce Plugin (vdadcwoo)
 ========================================
 
+### FORKED FROM DCWOO
+
+This is a forked version of dcwoo found here: https://github.com/digitalchalk/dcwoo - the difference is that this version checks if the cart has non-virtual and virtual products. If all virtual, the order is set to completed, otherwise, its set to processing.
+
 ### Assumptions
 
 This plugin provides an integration between DigitalChalk and WooCommerce inside a WordPress site for Viktoria de Ann.  It is assumed that you have installed WordPress and the WooCommerce plugin prior to installing this plugin.
@@ -9,7 +13,7 @@ It is also assumed that you have Administrator level access to your WordPress si
 
 ### Downloading the DCWoo Plugin
 
-Download the latest dcwoo plugin zip file from GitHub.  You can download the latest version of the plugin from this link: https://github.com/viktoriadeann/vdadcwoo/raw/master/releases/vdadcwoo-1.0.0.zip
+Download the latest dcwoo plugin zip file from GitHub.  You can download the latest version of the plugin from this link: https://github.com/viktoriadeann/vdadcwoo/raw/master/releases/vdadcwoo-1.0.1.zip
 
 
 ### Installing the Plugin
